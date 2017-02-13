@@ -1,0 +1,29 @@
+version: '2'
+
+networks:
+  custom:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.18.0.0/16
+        gateway: 172.18.0.1
+
+services:
+  openldap:
+    networks:
+      custom:
+        ipv4_address: 172.18.0.2
+    image: openldap
+
+  krb5kdc:
+    networks:
+      custom:
+        ipv4_address: 172.18.0.3
+    image: krb5kdc
+    depends_on:
+      - openldap
+    extra_hosts:
+      - "openldap.com:172.20.0.2"
+      - "krb5kdc.com:172.18.0.3"
+    privileged: true
